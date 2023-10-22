@@ -45,14 +45,39 @@ get_24hformat_hour('11 PM')            | 23                     | 12
 import re
 
 def get_24hformat_hour(hour_str):
-  time = None
-  if hour_str:
-    hour_str = hour_str.upper()
-    e = re.findall('AM|PM', hour_str)[0]
-    s = re.findall('\d+', hour_str)[0]
-    if e == 'PM':
-      time = 12 + int(s)
-    else:
-      time = int(s)
-  return str(time)
+  if len(hour_str)!=0:
+    hour_str = hour_str.lower()
+    l1 = re.findall('\d+',hour_str)
+    l2 = re.findall('am|pm',hour_str)
+    if len(l1) == 0:
+      return None
+    time = []
+    for hour in l1:
+      time.append(str(int(hour)))
+    if len(time[0]) >2 and len(time[0]) <5:
+      point = int(len(time[0])/2)
+      time.append(re.sub('\d','',time[0],point))
+      time[0]=re.sub(time[1],'',time[0])
+    n_hour=int(time[0])
+    hour_plus = 0
+    if len(time)==2:
+      n_minute = int(time[1])
+      hour_plus = int(n_minute/60)
+
+    if len(l2) == 0:
+      n_hour += hour_plus
+      if n_hour >=24:
+        n_hour %=24
+      return str(n_hour)
+    if l2[0] == 'pm':
+      if n_hour != 12:
+        n_hour += 12
+    elif n_hour == 12:
+      n_hour = 0
+    n_hour += hour_plus
+    if n_hour >=24:
+      n_hour%=24
+
+    return str(n_hour)  
+  return None
 #endregion bailam
